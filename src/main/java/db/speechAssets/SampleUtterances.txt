@@ -29,7 +29,7 @@ NextBusIntent next
 NextBusIntent next bus
 NextBusIntent next please
 
-SetStopIntent set stop to {StopNumber}
+SetStopIntent stop should be {StopNumber}
 SetStopIntent set stop {StopNumber}
 SetStopIntent set stop number {StopNumber}
 SetStopIntent stop number is {StopNumber}

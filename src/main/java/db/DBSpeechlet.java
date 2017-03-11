@@ -105,10 +105,8 @@ public class DBSpeechlet implements Speechlet {
 	}
 	
 	private List<Result> getBuses(Session session) {
-		if (buses == null) {
-			int stopNumber = getStopNumber(session);
-			buses = new WsRequest().getNextB(stopNumber);
-		}
+		int stopNumber = getStopNumber(session);
+		buses = new WsRequest().getNextB(stopNumber);
 		return buses;
 	}
 
@@ -152,7 +150,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNoNextBus(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText("Thanks you for using dublin bus today. Seeya");
+		speech.setText("Thank you for using dublin bus today. Seeya");
 		return SpeechletResponse.newTellResponse(speech);
 	}
 
@@ -166,8 +164,8 @@ public class DBSpeechlet implements Speechlet {
 			return getAskSpeechletResponse("I think you want to set the stop number to " + stopNumber + ". Is this correct?");
 
 		} catch (NumberFormatException e) {
-			log.error("problem setting stop number to  " + intent.getSlot(SLOT_STOP_NUMBER));
-			String speechText = "Sorry, I did not hear the stop number. Please say again?";
+			log.error("problem setting stop number to  " + intent.getSlot(SLOT_STOP_NUMBER).getValue());
+			String speechText = "I had a problem with that stop number. Please say again?";
 			return getAskSpeechletResponse(speechText);
 		}
 	}
@@ -182,8 +180,19 @@ public class DBSpeechlet implements Speechlet {
 			//session.getUser().getUserI
 			// new UploadObjectSingleOperation().uploadFile("gftestdbbucket", session.getUser().getUserId(), "" + stop);
 			getStopDao().saveUserStopDataItem(session.getUser().getUserId(), stop);
-			speech.setText("Great, I've updated your stop number to " + getStopNumber(session));
-			return SpeechletResponse.newTellResponse(speech);
+			String speechText = "Great, I've updated your stop number to " + getStopNumber(session) + ". If you would like to hear the time of the next bus, just say next bus. Otherwise just say exit."; 
+			speech.setText(speechText);
+
+			SimpleCard card = new SimpleCard();
+			card.setTitle("Setting stop");
+			card.setContent(speechText);
+			
+			
+			Reprompt reprompt = new Reprompt();
+			PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+			repromptSpeech.setText("Would you like to hear about the next bus?");
+			reprompt.setOutputSpeech(repromptSpeech);			
+			return SpeechletResponse.newAskResponse(speech, reprompt, card);
 
 		}
 		catch (Exception ioe) {
@@ -195,8 +204,17 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNoSetStop(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText("O.K. I've left the stop number the way it was");
-		return SpeechletResponse.newTellResponse(speech);
+		String speechText = "O.K. I've left the stop number the way it was. If you would like to try again, say set stop followed by the number. Alternatively say exit.";
+		speech.setText(speechText);
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Setting stop");
+		card.setContent(speechText);
+		
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText("Say set stop followed by the number, or exit.");
+		
+		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
 
 	private SpeechletResponse getMoreDetails(final Session session) {
@@ -249,8 +267,8 @@ public class DBSpeechlet implements Speechlet {
 		if (inBuses != null && inBuses.size() >= 0) {
 			if (currentResultIndex < inBuses.size()) {
 				Result result = inBuses.get(currentResultIndex);
-				speechText = "Route " + result.getRoute() + " this bus goes from " + result.getOrigin() + " to "
-						+ result.getDestination() + " its direction is " + result.getDirection()
+				speechText = "Route " + result.getRoute() + ". This bus goes from " + result.getOrigin() + " to "
+						+ result.getDestination() + ". It's direction is " + result.getDirection()
 						+ " and will leave in " + result.getDuetime()
 						+ " minutes. Would you like to hear about the next bus?";
 			} else {
@@ -304,8 +322,15 @@ public class DBSpeechlet implements Speechlet {
 	 * @return SpeechletResponse spoken and visual response for the given intent
 	 */
 	private SpeechletResponse getWelcomeResponse(final Session session) {
-		String speechText = "Welcome to the Dublin Bus Skill, you can say \"Stop number\" or \"get next bus\"";
+		int stopNumber = getStopNumber(session);
 
+		String speechText = "";
+		if (stopNumber != 0) {
+			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"get next.";
+		} else {
+			speechText = "You can get a list of the next buses due to your stop, but first you need to set your stop number. This is usually a four digit number written on your bus stop. You should just need to do this once and I'll remember it for you.";
+		}
+		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
 		card.setTitle("Dublin Bus");
@@ -333,7 +358,7 @@ public class DBSpeechlet implements Speechlet {
 		int stopNumber = getStopNumber(session);
 		String speechText = "";
 		if (stopNumber != 0) {
-			speechText = "You can get a list of the next buses due to your stop number " + stopNumber;
+			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying get next. You can change the stop number by saying set stop, followed by your bus stop number. For example, set stop 1234.";
 		} else {
 			speechText = "You can get a list of the next buses due to your stop, but first you need to set your stop number. This is usually a four digit number written on your bus stop. You should just need to do this once and I'll remember it.";
 		}

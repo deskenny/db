@@ -20,8 +20,8 @@ import com.amazonaws.services.dynamodbv2.model.PutItemResult;
  */
 public class StopDao {
 	private AmazonDynamoDB dynamoDB = AmazonDynamoDBClientBuilder.standard().build();
-	// 	withRegion(Regions.US_EAST_1).
-	
+	// withRegion(Regions.US_EAST_1).
+
 	// private AmazonDynamoDBClient dynamoDB = AmazonDynamoDB.defaultClient();
 	// if (amazonDynamoDBClient == null) {
 	// amazonDynamoDBClient =
@@ -42,37 +42,37 @@ public class StopDao {
 	 * @return
 	 */
 	public UserStopDataItem getUserStopDataItem(String userId) {
-		log.info("getUserStopDataItem for userId={}", userId );
+		log.info("getUserStopDataItem for userId={}", userId);
 		UserStopDataItem item = new UserStopDataItem();
 		HashMap<String, AttributeValue> map = new HashMap<String, AttributeValue>();
 		AttributeValue value = new AttributeValue(userId);
-		log.info("getUserStopDataItem for value={}", value );
+		log.info("getUserStopDataItem for value={}", value);
 		map.put("userid", value);
 
 		GetItemResult result = dynamoDB.getItem("dbstops", map);
 		Map<String, AttributeValue> resultItem = result.getItem();
-		String stop = resultItem.get("stop").getS();
+		if (resultItem != null) {
+			String stop = resultItem.get("stop").getS();
 
-		try {
-			if (stop != null) {
-				log.info("setting stop number stop={}", stop );
-				item.setStop(Integer.valueOf(stop.toString()));
+			try {
+				if (stop != null) {
+					log.info("setting stop number stop={}", stop);
+					item.setStop(Integer.valueOf(stop.toString()));
+				} else {
+					log.info("did not find stop number ");
+				}
+			} catch (NumberFormatException nfe) {
+				log.error("Number format problem " + nfe.getMessage());
 			}
-			else {
-				log.info("did not find stop number ");
-			}
-		} catch (NumberFormatException nfe) {
-			log.error("Number format problem " + nfe.getMessage());
 		}
 		return item;
 	}
-
 
 	public void saveUserStopDataItem(String userId, Integer stop) {
 		PutItemRequest putItem = new PutItemRequest();
 		HashMap<String, AttributeValue> map = new HashMap<String, AttributeValue>();
 		map.put("userid", new AttributeValue(userId));
-		map.put("stop", new AttributeValue(String.valueOf(stop)));		
+		map.put("stop", new AttributeValue(String.valueOf(stop)));
 		putItem.setItem(map);
 		putItem.setTableName("dbstops");
 		PutItemResult result = dynamoDB.putItem(putItem);
