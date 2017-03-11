@@ -16,6 +16,9 @@
       "intent": "NextBusIntent"
     },
     {
+      "intent": "NextThreeBusesIntent"
+    },    
+    {
       "intent": "SetStopIntent",
       "slots": [
         {

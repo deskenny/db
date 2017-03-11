@@ -28,9 +28,18 @@ WelcomeIntent play welcome
 NextBusIntent next
 NextBusIntent next bus
 NextBusIntent next please
+NextBusIntent when is my bus due
+
+NextThreeBusesIntent list buses
+NextThreeBusesIntent give me next three buses
+NextThreeBusesIntent give me next three
+NextThreeBusesIntent next three
+NextThreeBusesIntent bus list   
 
 SetStopIntent stop should be {StopNumber}
 SetStopIntent set stop {StopNumber}
 SetStopIntent set stop number {StopNumber}
 SetStopIntent stop number is {StopNumber}
+SetStopIntent set my stop to number {StopNumber}
+SetStopIntent update my stop to number {StopNumber}
 

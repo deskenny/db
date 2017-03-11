@@ -172,29 +172,40 @@ In the input dialog, enter the JSON input for your function, or select one of th
   <p><strong>Tip:</strong> You can add new JSON input files in your project, and they will show up in this dialog as long as the file name ends with ".json".</p>
 </blockquote>
 
-<p>Click <strong>Invoke</strong> and check the output of your function in the Eclipse Console View.</p>
-
 <hr>
 
 </div>
 
 <div>
+Bus stop numbers in dublin are usually 4 digits long. To use this service the user needs to specify this number, which would be written on their local busstop
+</div>
+<div>
+This skill lets you find out when the next buses are arriving at your stop. To do this, you need to know the number of your bus stop. This is usually a four digit number and is written on the bus stop.
 
-<h3>What's next?</h3>
+Once you have this, you can set the number for the skill by saying, 
 
-<p>If you want to know more about AWS Lambda, check out the following links:</p>
+ask dublin bus, set stop and then the number
 
-<ul>
-<li><a href="http://aws.amazon.com/lambda/details/">AWS Lambda Product Details</a></li>
-<li><a href="http://docs.aws.amazon.com/lambda/latest/dg/welcome.html">AWS Lambda Developer Guide</a></li>
-</ul>
+for example
 
-<p><a href="mailto:aws-eclipse-feedback@amazon.com">Contact us</a> to send bug reports and feedbacks.</p>
+ask dublin bus, set stop to number 2188.
 
-<p><strong><em>AWS SDK for Java team</em></strong></p>
+Once you've done that, from then on you just need to say
+
+ask dublin bus, when is my bus due
+or 
+
+ask dublin bus, next bus
+
+
+The data comes from dublinked.ie
 
 </div>
+<div>
 
+Alexa ask dublin bus to set my stop to number 2188
+when is my bus due
+next bus
 </div>
 
 </div>
