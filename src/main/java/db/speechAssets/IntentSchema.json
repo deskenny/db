@@ -1,0 +1,37 @@
+{
+  "intents": [
+    {
+      "intent": "YesIntent"
+    },
+    {
+      "intent": "NoIntent"
+    },    
+    {
+      "intent": "MoreDetailsIntent"
+    },      
+    {
+      "intent": "WelcomeIntent"
+    },    
+    {
+      "intent": "NextBusIntent"
+    },
+    {
+      "intent": "SetStopIntent",
+      "slots": [
+        {
+          "name": "StopNumber",
+          "type": "AMAZON.NUMBER"
+        }    
+      ]
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}

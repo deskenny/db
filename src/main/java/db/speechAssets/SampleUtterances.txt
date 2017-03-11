@@ -1,0 +1,36 @@
+YesIntent yes
+YesIntent yep
+YesIntent yeah
+YesIntent sure
+YesIntent yes please
+YesIntent affirmative
+YesIntent yes read the recognition moments
+
+NoIntent no
+NoIntent nope
+NoIntent no thank you
+NoIntent not now
+NoIntent negative
+
+MoreDetailsIntent read more
+MoreDetailsIntent yes read more
+MoreDetailsIntent more details	
+MoreDetailsIntent more please
+MoreDetailsIntent more
+MoreDetailsIntent hear more
+MoreDetailsIntent hear more please 
+MoreDetailsIntent hear more about it
+MoreDetailsIntent hear more now 
+
+WelcomeIntent welcome
+WelcomeIntent play welcome
+
+NextBusIntent next
+NextBusIntent next bus
+NextBusIntent next please
+
+SetStopIntent set stop to {StopNumber}
+SetStopIntent set stop {StopNumber}
+SetStopIntent set stop number {StopNumber}
+SetStopIntent stop number is {StopNumber}
+
