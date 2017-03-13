@@ -221,20 +221,39 @@ public class DBSpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse getMoreDetails(final Session session) {
-		String speechText = "";
+		SpeechletResponse response = null;
 		int currentResultIndex = getAttributeSafe(session, CURRENT_RESULT_INDEX);
 		if (currentResultIndex > 0) {
 			currentResultIndex = currentResultIndex - 1;
 		}
 
 		if (getStopNumber(session) == 0) {
-			speechText = "First you need to tell me the stop number by saying \"set stop\" and then the number.";
+			response = promptToSetStopNumberResponse();
 		} else {
-			speechText = getDetailedBusDetailsSpeech(session, currentResultIndex, getBuses(session));
+			response = getDetailedBusDetailsSpeech(session, currentResultIndex, getBuses(session));
 		}
-		SimpleCard card = new SimpleCard();
-		card.setTitle("Detailed Dublin Bus view");
-		card.setContent(speechText);
+
+		return response ;
+	}
+
+	private SpeechletResponse getNextBus(final Session session) {
+		SpeechletResponse response = null;
+
+		int currentResultIndex = getAttributeSafe(session, CURRENT_RESULT_INDEX);
+		session.setAttribute(MODE, NEXT_BUS_MODE);
+
+		if (getStopNumber(session) == 0) {
+			response = promptToSetStopNumberResponse();
+		} else {
+			response = getSimpleBusDetailsSpeech(session, currentResultIndex, getBuses(session));
+		}
+
+		return response;
+	}
+	private SpeechletResponse promptToSetStopNumberResponse() {
+		SpeechletResponse response;
+		String speechText = "First you need to tell me the stop number by saying \"set stop\" and then the number.";
+		SimpleCard card = getCard(speechText);
 
 		// Create the plain text output.
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
@@ -243,30 +262,64 @@ public class DBSpeechlet implements Speechlet {
 		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
 		repromptSpeech.setText("Would you like to hear about the next bus?");
 		reprompt.setOutputSpeech(repromptSpeech);
+		response = SpeechletResponse.newAskResponse(speech, reprompt, card);
+		return response;
+	}
 
-		return SpeechletResponse.newAskResponse(speech, reprompt, card);
+	private SimpleCard getCard(String speechText) {
+		SimpleCard card = new SimpleCard();
+		card.setTitle("Detailed Dublin Bus view");
+		card.setContent(speechText);
+		return card;
 	}
 		
-	private String getThreeBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
+	private SpeechletResponse getThreeBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
 		String speechText = "";
 		if (inBuses != null && inBuses.size() >= 0) {
-			if (currentResultIndex < inBuses.size()) {
-				speechText = "The next three buses are " 
-						+ inBuses.get(0).getRoute() + " in " + inBuses.get(0).getDuetime()
-						+ "minutes, " + inBuses.get(1).getRoute() + " in " + inBuses.get(1).getDuetime()
-						+ "minutes and " + inBuses.get(2).getRoute() + " in " + inBuses.get(2).getDuetime()						
-						+ " minutes time. Would you like to hear more details, or next bus?";
+			if (currentResultIndex + 2 < inBuses.size()) {
+				speechText = getThreeBusString(inBuses, currentResultIndex);
 				session.setAttribute(CURRENT_RESULT_INDEX, 3);
+				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);
+			}
+			else if (currentResultIndex + 1 < inBuses.size()) {
+				speechText = getTwoBusString(inBuses, currentResultIndex);
+				session.setAttribute(CURRENT_RESULT_INDEX, 2);
+				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);
+			}
+			else if (currentResultIndex < inBuses.size()) {
+				speechText = getOneBusString(inBuses, currentResultIndex);
+				session.setAttribute(CURRENT_RESULT_INDEX, 1);
+				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);		
 			} else {
-				speechText = "There are not 3 buses for stop number " + getStopNumber(session) + " at this time. You can say next bus to hear one.";
+				return newTellResponse("There are no more details to tell you about stop number " + getStopNumber(session) + " at this time.");
 			}
 		} else {
-			speechText = "Could not find any buses";
+			return newTellResponse("Could not find any buses");
 		}	
-		return speechText;
 	}
 
-	private String getSimpleBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
+	private String getThreeBusString(List<Result> inBuses, int currentResultIndex) {
+		return "The next three buses are " 
+				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
+				+ "minutes, " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
+				+ "minutes, and " + inBuses.get(currentResultIndex+2).getRoute() + " in " + inBuses.get(currentResultIndex+2).getDuetime()						
+				+ " minutes time. Would you like to hear more details, or next bus?";
+	}
+	
+	private String getTwoBusString(List<Result> inBuses, int currentResultIndex) {
+		return "The next two buses are " 
+				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
+				+ "minutes, and " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
+				+ "minutes time. Would you like to hear more details, or next bus?";
+	}
+
+	private String getOneBusString(List<Result> inBuses, int currentResultIndex) {
+		return "The number " + inBuses.get(currentResultIndex).getRoute() + " bus will arrive in "
+				+ inBuses.get(currentResultIndex).getDuetime()
+				+ " minutes time. Would you like to hear more details, or next bus?";
+	}
+	
+	private SpeechletResponse getSimpleBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
 		String speechText = "";
 		if (inBuses != null && inBuses.size() >= 0) {
 			if (currentResultIndex < inBuses.size()) {
@@ -274,17 +327,16 @@ public class DBSpeechlet implements Speechlet {
 						+ inBuses.get(currentResultIndex).getDuetime()
 						+ " minutes time. Would you like to hear more details, or next bus?";
 				session.setAttribute(CURRENT_RESULT_INDEX, currentResultIndex + 1);
+				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);		
 			} else {
-				speechText = "No more buses listed for stop number " + getStopNumber(session);
+				return newTellResponse("No more buses currently listed for stop number " + getStopNumber(session));
 			}
 		} else {
-			speechText = "Could not find any buses";
+			return newTellResponse("Could not find any buses");
 		}	
-		return speechText;
 	}
-	
-	
-	private String getDetailedBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
+
+	private SpeechletResponse getDetailedBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
 		String speechText;
 		if (inBuses != null && inBuses.size() >= 0) {
 			if (currentResultIndex < inBuses.size()) {
@@ -293,13 +345,13 @@ public class DBSpeechlet implements Speechlet {
 						+ result.getDestination() + ". It's direction is " + result.getDirection()
 						+ " and will leave in " + result.getDuetime()
 						+ " minutes. Would you like to hear about the next bus?";
+				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);
 			} else {
-				speechText = "No more buses listed for stop number " + getStopNumber(session);
+				return newTellResponse("No more buses currently listed for stop number " + getStopNumber(session));
 			}
 		} else {
-			speechText = "Could not find any buses";
+			return newTellResponse("Could not find any buses");
 		}
-		return speechText;
 	}
 	
 	private SpeechletResponse getNextThreeBuses(final Session session) {
@@ -333,36 +385,6 @@ public class DBSpeechlet implements Speechlet {
 		
 	}
 	
-	private SpeechletResponse getNextBus(final Session session) {
-		List<Result> buses = getBuses(session);
-		String speechText = "";
-		int currentResultIndex = getAttributeSafe(session, CURRENT_RESULT_INDEX);
-		session.setAttribute(MODE, NEXT_BUS_MODE);
-
-		if (getStopNumber(session) == 0) {
-			speechText = "First you need to tell me the stop number by saying \"set stop\" and then the number.";
-		} else {
-			speechText = getSimpleBusDetailsSpeech(session, currentResultIndex, buses);
-		}
-
-		// Create the Simple card content.
-		SimpleCard card = new SimpleCard();
-		card.setTitle("Next Dublin Bus");
-		card.setContent(speechText);
-
-		// Create the plain text output.
-		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText(speechText);
-
-		Reprompt reprompt = new Reprompt();
-		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
-		repromptSpeech.setText("Would you like to hear about the next bus?");
-		session.setAttribute(CURRENT_RESULT_INDEX, currentResultIndex+1);
-		reprompt.setOutputSpeech(repromptSpeech);
-
-		return SpeechletResponse.newAskResponse(speech, reprompt, card);
-	}
-
 	@Override
 	public void onSessionEnded(final SessionEndedRequest request, final Session session) throws SpeechletException {
 		log.info("onSessionEnded requestId={}, sessionId={}", request.getRequestId(), session.getSessionId());
@@ -472,4 +494,23 @@ public class DBSpeechlet implements Speechlet {
 
 		return SpeechletResponse.newAskResponse(speech, reprompt, card);
 	}
+	
+	private SpeechletResponse newTellResponse(String speech) {
+		PlainTextOutputSpeech opSpeech = new PlainTextOutputSpeech();
+		opSpeech.setText(speech);
+		SpeechletResponse.newTellResponse(opSpeech);
+		return SpeechletResponse.newTellResponse(opSpeech);
+	}
+	
+	private SpeechletResponse newAskResponse(String speechText, String repromptText, String card) {
+		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
+		speech.setText(speechText);
+		
+		Reprompt reprompt = new Reprompt();
+		PlainTextOutputSpeech repromptSpeech = new PlainTextOutputSpeech();
+		repromptSpeech.setText(repromptText);
+		reprompt.setOutputSpeech(repromptSpeech);				
+		return SpeechletResponse.newAskResponse(speech, reprompt, getCard(speechText));	
+	}	
+		
 }
