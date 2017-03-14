@@ -83,9 +83,9 @@ public class DBSpeechlet implements Speechlet {
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getHelpResponse(session);
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
-			return doExit(session, "Thank you for using dublin bus today");
+			return doExit(session, "Thank you for using dublin transport today");
 		} else if ("AMAZON.CancelIntent".equals(intentName)) {
-			return doExit(session, "Thank you for using dublin bus today");
+			return doExit(session, "Thank you for using dublin transport today");
 		} else {
 			return getWelcomeResponse(session);
 		}
@@ -150,7 +150,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNoNextBus(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText("Thank you for using dublin bus today. Seeya!");
+		speech.setText("Thank you for using dublin transport today. Seeya!");
 		return SpeechletResponse.newTellResponse(speech);
 	}
 
@@ -265,7 +265,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SimpleCard getCard(String speechText) {
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Detailed Dublin Bus view");
+		card.setTitle("Detailed Dublin Transport view");
 		card.setContent(speechText);
 		return card;
 	}
@@ -306,7 +306,7 @@ public class DBSpeechlet implements Speechlet {
 				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
 				+ " minutes, " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
 				+ " minutes, and " + inBuses.get(currentResultIndex+2).getRoute() + " in " + inBuses.get(currentResultIndex+2).getDuetime()						
-				+ " minutes time. Would you like to about the next set of buses?";
+				+ " minutes time. Would you like to hear about the next set of buses?";
 	}
 	
 	private String getThreeBusString(List<Result> inBuses, int currentResultIndex) {
@@ -372,7 +372,7 @@ public class DBSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Dublin Bus");
+		card.setTitle("Dublin Transport");
 		card.setContent(speechText);
 
 		// Create the plain text output.
@@ -404,7 +404,7 @@ public class DBSpeechlet implements Speechlet {
 
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Dublin Bus");
+		card.setTitle("Dublin Transport");
 		card.setContent(speechText);
 
 		// Create the plain text output.
