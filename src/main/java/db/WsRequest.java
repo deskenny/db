@@ -20,6 +20,8 @@ import com.google.gson.GsonBuilder;
 // http://www.jsonschema2pojo.org/
 // https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?stopid=184&format=json
 // https://github.com/google/gson
+// https://www.luas.ie/index.php?id=346&get=Goldenbridge&direction=Outbound
+// https://www.luas.ie/index.php?id=346&get=Goldenbridge&direction=Inbound
 
 public class WsRequest {
 	private final Logger log = LoggerFactory.getLogger(WsRequest.class);
