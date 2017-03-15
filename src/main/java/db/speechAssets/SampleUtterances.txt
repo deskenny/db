@@ -12,15 +12,11 @@ NoIntent no thank you
 NoIntent not now
 NoIntent negative
 
-MoreDetailsIntent read more
-MoreDetailsIntent yes read more
+MoreDetailsIntent next bus in detail
+MoreDetailsIntent read more details
 MoreDetailsIntent more details	
-MoreDetailsIntent more please
-MoreDetailsIntent more
-MoreDetailsIntent hear more
-MoreDetailsIntent hear more please 
-MoreDetailsIntent hear more about it
-MoreDetailsIntent hear more now 
+MoreDetailsIntent detailed list
+MoreDetailsIntent for a detailed list of buses
 
 WelcomeIntent welcome
 WelcomeIntent play welcome
@@ -30,6 +26,10 @@ NextBusIntent next bus
 NextBusIntent next please
 NextBusIntent when is my bus due
 NextBusIntent when is the next bus
+NextBusIntent give me a summary
+NextBusIntent next buses
+NextBusIntent when are the next buses
+NextBusIntent for next buses
 
 SetStopIntent stop should be {StopNumber}
 SetStopIntent set stop {StopNumber}

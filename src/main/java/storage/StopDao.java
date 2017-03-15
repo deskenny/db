@@ -56,7 +56,7 @@ public class StopDao {
 
 			try {
 				if (stop != null) {
-					log.info("setting stop number stop={}", stop);
+					log.info("getting stop number stop={}", stop);
 					item.setStop(Integer.valueOf(stop.toString()));
 				} else {
 					log.info("did not find stop number ");

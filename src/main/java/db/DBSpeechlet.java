@@ -37,8 +37,10 @@ public class DBSpeechlet implements Speechlet {
 	private String MODE = "MODE";
 	private String STOP_NUMBER = "STOP_NUMBER";
 	private String STOP_NUMBER_IN_PROGRESS = "STOP_NUMBER_IN_PROGRESS";
-	private int NEXT_BUS_MODE = 1;
+	private int THREE_BUS_MODE = 1;
 	private int STOP_NUMBER_MODE = 2;
+	private int DETAILED_LIST_MODE = 3;
+	
 	private static final String SLOT_STOP_NUMBER = "StopNumber";
 	private StopDao stopDao = null;	
 	
@@ -120,7 +122,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doYes(Session session) {
 		int mode = getAttributeSafe(session, MODE);
-		if (mode == NEXT_BUS_MODE) {
+		if (mode == THREE_BUS_MODE || mode == DETAILED_LIST_MODE) {
 			return doYesNextBus(session);
 		} else if (mode == STOP_NUMBER_MODE) {
 			return doYesSetStop(session);
@@ -133,7 +135,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNo(Session session) {
 		int mode = getAttributeSafe(session, MODE);
-		if (mode == NEXT_BUS_MODE) {
+		if (mode == THREE_BUS_MODE || mode == DETAILED_LIST_MODE) {
 			return doNoNextBus(session);
 		} else if (mode == STOP_NUMBER_MODE) {
 			return doNoSetStop(session);
@@ -145,7 +147,14 @@ public class DBSpeechlet implements Speechlet {
 	}
 
 	private SpeechletResponse doYesNextBus(Session session) {
-		return getNextBus(session);
+		int mode = getAttributeSafe(session, MODE);
+
+		if (mode == THREE_BUS_MODE) {
+			return getNextBus(session);
+		}
+		else {
+			return getDetailedBusDetailsSpeech(session, getAttributeSafe(session, CURRENT_RESULT_INDEX),  getBuses(session));
+		}
 	}
 
 	private SpeechletResponse doNoNextBus(Session session) {
@@ -180,9 +189,9 @@ public class DBSpeechlet implements Speechlet {
 			//session.getUser().getUserI
 			// new UploadObjectSingleOperation().uploadFile("gftestdbbucket", session.getUser().getUserId(), "" + stop);
 			getStopDao().saveUserStopDataItem(session.getUser().getUserId(), stop);
-			String speechText = "Great, I've updated your stop number to " + getStopNumber(session) + ". If you would like to hear the time of the next bus, just say next bus. Otherwise just say exit."; 
+			String speechText = "Great, I've updated your stop number to " + getStopNumber(session) + ". If you would like to hear the time of the next buses, just say next buses. Otherwise just say exit."; 
 			speech.setText(speechText);
-			session.setAttribute(MODE, NEXT_BUS_MODE);
+			session.setAttribute(MODE, THREE_BUS_MODE);
 
 			SimpleCard card = new SimpleCard();
 			card.setTitle("Setting stop");
@@ -220,9 +229,6 @@ public class DBSpeechlet implements Speechlet {
 	private SpeechletResponse getMoreDetails(final Session session) {
 		SpeechletResponse response = null;
 		int currentResultIndex = getAttributeSafe(session, CURRENT_RESULT_INDEX);
-		if (currentResultIndex > 0) {
-			currentResultIndex = currentResultIndex - 1;
-		}
 
 		if (getStopNumber(session) == 0) {
 			response = promptToSetStopNumberResponse();
@@ -237,7 +243,7 @@ public class DBSpeechlet implements Speechlet {
 		SpeechletResponse response = null;
 
 		int currentResultIndex = getAttributeSafe(session, CURRENT_RESULT_INDEX);
-		session.setAttribute(MODE, NEXT_BUS_MODE);
+		session.setAttribute(MODE, THREE_BUS_MODE);
 
 		if (getStopNumber(session) == 0) {
 			response = promptToSetStopNumberResponse();
@@ -301,36 +307,47 @@ public class DBSpeechlet implements Speechlet {
 		}	
 	}
 
+	private String getDueTime(Result bus) {
+		if (bus != null && bus.getDuetime().equalsIgnoreCase("due")) {
+			return bus.getRoute() + "which is due now";
+		}
+		else if (bus != null && bus.getDuetime().equalsIgnoreCase("1")) {
+			return bus.getRoute() + " in 1 minute";			
+		} 
+		else {
+			return bus.getRoute() + " in " + bus.getDuetime() + " minutes";
+		}
+	}
+	
 	private String getMoreThanThreeBusString(List<Result> inBuses, int currentResultIndex) {
 		return "The next three buses are " 
-				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
-				+ " minutes, " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
-				+ " minutes, and " + inBuses.get(currentResultIndex+2).getRoute() + " in " + inBuses.get(currentResultIndex+2).getDuetime()						
-				+ " minutes time. Would you like to hear about the next set of buses?";
+				+  getDueTime(inBuses.get(currentResultIndex)) + ", " 
+				+  getDueTime(inBuses.get(currentResultIndex+1)) + ", "
+				+ " and " + getDueTime(inBuses.get(currentResultIndex+2))					
+				+ " time. Would you like to hear about the next set of buses?";
 	}
 	
 	private String getThreeBusString(List<Result> inBuses, int currentResultIndex) {
 		return "The next three buses are " 
-				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
-				+ " minutes, " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
-				+ " minutes, and " + inBuses.get(currentResultIndex+2).getRoute() + " in " + inBuses.get(currentResultIndex+2).getDuetime()						
-				+ " minutes time.";
+				+  getDueTime(inBuses.get(currentResultIndex)) + ", " 
+				+  getDueTime(inBuses.get(currentResultIndex+1)) + ", "
+				+ " and " + getDueTime(inBuses.get(currentResultIndex+2))					
+				+ " time. Goodbye";		
 	}
 	
 	private String getTwoBusString(List<Result> inBuses, int currentResultIndex) {
 		return "The next two buses are " 
-				+ inBuses.get(currentResultIndex).getRoute() + " in " + inBuses.get(currentResultIndex).getDuetime()
-				+ " minutes, and " + inBuses.get(currentResultIndex+1).getRoute() + " in " + inBuses.get(currentResultIndex+1).getDuetime()
-				+ " minutes time.";
+				+  getDueTime(inBuses.get(currentResultIndex)) + ", and " 
+				+  getDueTime(inBuses.get(currentResultIndex+1)) + " "
+				+ " time. Goodbye";		
 	}
 
 	private String getOneBusString(List<Result> inBuses, int currentResultIndex) {
-		return "The number " + inBuses.get(currentResultIndex).getRoute() + " bus will arrive in "
-				+ inBuses.get(currentResultIndex).getDuetime()
-				+ " minutes time.";
+		return "The last bus listed is " +  getDueTime(inBuses.get(currentResultIndex)) + " time. Goodbye";				
 	}
 	
 	private SpeechletResponse getDetailedBusDetailsSpeech(final Session session, int currentResultIndex, List<Result> inBuses) {
+		session.setAttribute(MODE, DETAILED_LIST_MODE);
 		String speechText;
 		if (inBuses != null && inBuses.size() >= 0) {
 			if (currentResultIndex < inBuses.size()) {
@@ -339,6 +356,7 @@ public class DBSpeechlet implements Speechlet {
 						+ result.getDestination() + ". It's direction is " + result.getDirection()
 						+ " and will leave in " + result.getDuetime()
 						+ " minutes. Would you like to hear about the next bus?";
+				session.setAttribute(CURRENT_RESULT_INDEX, currentResultIndex + 1);
 				return newAskResponse(speechText, "Would you like to hear about the next bus?", speechText);
 			} else {
 				return newTellResponse("No more buses currently listed for stop number " + getStopNumber(session));
@@ -365,7 +383,7 @@ public class DBSpeechlet implements Speechlet {
 
 		String speechText = "";
 		if (stopNumber != 0) {
-			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"when is the next bus. If you want to get detailed information, just say \"get detailed information\". If you ever want to change your stop number, just say stop number followed the the number of your stop.";
+			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"when are the next buses. If you want to get detailed information, just say \"get detailed information\". If you ever want to change your stop number, just say stop number followed the the number of your stop.";
 		} else {
 			speechText = "You can get a list of the next buses due to your stop, but first you need to set your stop number. This is usually a four digit number written on your bus stop. You should just need to do this once and I'll remember it for you.";
 		}
@@ -396,8 +414,19 @@ public class DBSpeechlet implements Speechlet {
 
 		int stopNumber = getStopNumber(session);
 		String speechText = "";
-		if (stopNumber != 0) {
-			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"when is the next bus. If you want to get detailed information, just say \"get detailed information\". You can change the stop number by saying set stop, followed by your bus stop number. For example, set stop 1234.";
+		int mode = getAttributeSafe(session, MODE);
+
+		if (mode == STOP_NUMBER_MODE) {
+			speechText = "You are currently are setting the stop number. Sometimes I can find it hard to recognise the number, so try speaking the number digit by digit. Also I sometimes confuse the word 'to', with the number 'two', so just the numbers. If you are not trying to set the stop number, just say exit and start again.";			
+		}
+		else if (mode == THREE_BUS_MODE) {
+			speechText = "You are currently listening in summary mode. If you want to switch to listen to more detailed list, just say, \"next bus in detail\"";
+		}
+		else if (mode == DETAILED_LIST_MODE) {
+			speechText = "You are currently listening in detail mode. If you want to switch to a summary list just say, \"give me a summary\"";
+		}
+		else if (stopNumber != 0) {
+			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"when are the next buses. If you want to get detailed information, just say \"get detailed information\". You can change the stop number by saying set stop, followed by your bus stop number. For example, set stop 1234.";
 		} else {
 			speechText = "You can get a list of the next buses due to your stop, but first you need to set your stop number. This is usually a four digit number written on your bus stop. You should just need to do this once and I'll remember it.";
 		}
