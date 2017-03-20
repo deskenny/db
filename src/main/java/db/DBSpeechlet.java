@@ -85,9 +85,9 @@ public class DBSpeechlet implements Speechlet {
 		} else if ("AMAZON.HelpIntent".equals(intentName)) {
 			return getHelpResponse(session);
 		} else if ("AMAZON.StopIntent".equals(intentName)) {
-			return doExit(session, "Thank you for using dublin transport today");
+			return doExit(session, "Goodbye.");
 		} else if ("AMAZON.CancelIntent".equals(intentName)) {
-			return doExit(session, "Thank you for using dublin transport today");
+			return doExit(session, "Goodbye.");
 		} else {
 			return getWelcomeResponse(session);
 		}
@@ -159,7 +159,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNoNextBus(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText("Thank you for using dublin transport today. Seeya!");
+		speech.setText("Goodbye.");
 		return SpeechletResponse.newTellResponse(speech);
 	}
 
