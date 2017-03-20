@@ -30,6 +30,7 @@ NextBusIntent give me a summary
 NextBusIntent next buses
 NextBusIntent when are the next buses
 NextBusIntent for next buses
+NextBusIntent buses
 
 SetStopIntent stop should be {StopNumber}
 SetStopIntent set stop {StopNumber}
