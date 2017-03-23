@@ -4,7 +4,6 @@ YesIntent yeah
 YesIntent sure
 YesIntent yes please
 YesIntent affirmative
-YesIntent yes read the recognition moments
 
 NoIntent no
 NoIntent nope
@@ -31,6 +30,7 @@ NextBusIntent next buses
 NextBusIntent when are the next buses
 NextBusIntent for next buses
 NextBusIntent buses
+NextBusIntent for buses
 
 SetStopIntent stop should be {StopNumber}
 SetStopIntent set stop {StopNumber}
