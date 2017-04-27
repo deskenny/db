@@ -1,12 +1,12 @@
 package storage;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -70,9 +70,11 @@ public class StopDao {
 
 	public void saveUserStopDataItem(String userId, Integer stop) {
 		PutItemRequest putItem = new PutItemRequest();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 		HashMap<String, AttributeValue> map = new HashMap<String, AttributeValue>();
 		map.put("userid", new AttributeValue(userId));
 		map.put("stop", new AttributeValue(String.valueOf(stop)));
+		map.put("time", new AttributeValue(sdf.format(System.currentTimeMillis())));
 		putItem.setItem(map);
 		putItem.setTableName("dbstops");
 		PutItemResult result = dynamoDB.putItem(putItem);

@@ -32,16 +32,15 @@ import storage.UserStopDataItem;
 
 public class DBSpeechlet implements Speechlet {
 	private static final Logger log = LoggerFactory.getLogger(DBSpeechlet.class);
-	private List<Result> buses = null;
-	private String CURRENT_RESULT_INDEX = "CURRENT_RESULT_INDEX";
-	private String MODE = "MODE";
-	private String STOP_NUMBER = "STOP_NUMBER";
-	private String STOP_NUMBER_IN_PROGRESS = "STOP_NUMBER_IN_PROGRESS";
-	private int THREE_BUS_MODE = 1;
-	private int STOP_NUMBER_MODE = 2;
-	private int DETAILED_LIST_MODE = 3;
+	private final static String CURRENT_RESULT_INDEX = "CURRENT_RESULT_INDEX";
+	private final static String MODE = "MODE";
+	private final static String STOP_NUMBER = "STOP_NUMBER";
+	private final static String STOP_NUMBER_IN_PROGRESS = "STOP_NUMBER_IN_PROGRESS";
+	private final static int THREE_BUS_MODE = 1;
+	private final static int STOP_NUMBER_MODE = 2;
+	private final static int DETAILED_LIST_MODE = 3;	
+	private final static String SLOT_STOP_NUMBER = "StopNumber";
 	
-	private static final String SLOT_STOP_NUMBER = "StopNumber";
 	private StopDao stopDao = null;	
 	
 	private StopDao getStopDao() {
@@ -107,9 +106,7 @@ public class DBSpeechlet implements Speechlet {
 	}
 	
 	private List<Result> getBuses(Session session) {
-		int stopNumber = getStopNumber(session);
-		buses = new WsRequest().getNextB(stopNumber);
-		return buses;
+		return new WsRequest().getNextB(getStopNumber(session));
 	}
 
 	private int getAttributeSafe(Session session, String name) {
@@ -165,7 +162,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doSetStop(final Session session, Intent intent) {
 		try {
-			log.info("slot stop number was " + intent.getSlot(SLOT_STOP_NUMBER));
+			log.info("slot stop number named " + intent.getSlot(SLOT_STOP_NUMBER).getName() + " was " + intent.getSlot(SLOT_STOP_NUMBER).getValue());
 			int stopNumber = Integer.parseInt(intent.getSlot(SLOT_STOP_NUMBER).getValue());
 			session.setAttribute(STOP_NUMBER_IN_PROGRESS, stopNumber);
 			session.setAttribute(MODE, STOP_NUMBER_MODE);
@@ -271,7 +268,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private SimpleCard getCard(String speechText) {
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Detailed Dublin Transport view");
+		card.setTitle("Detailed Dublin Bus view");
 		card.setContent(speechText);
 		return card;
 	}
@@ -309,7 +306,7 @@ public class DBSpeechlet implements Speechlet {
 
 	private String getDueTime(Result bus) {
 		if (bus != null && bus.getDuetime().equalsIgnoreCase("due")) {
-			return bus.getRoute() + "which is due now";
+			return bus.getRoute() + " which is due now";
 		}
 		else if (bus != null && bus.getDuetime().equalsIgnoreCase("1")) {
 			return bus.getRoute() + " in 1 minute";			
@@ -390,7 +387,7 @@ public class DBSpeechlet implements Speechlet {
 		
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Dublin Transport");
+		card.setTitle("Dublin Bus");
 		card.setContent(speechText);
 
 		// Create the plain text output.
@@ -433,7 +430,7 @@ public class DBSpeechlet implements Speechlet {
 
 		// Create the Simple card content.
 		SimpleCard card = new SimpleCard();
-		card.setTitle("Dublin Transport");
+		card.setTitle("Dublin Bus");
 		card.setContent(speechText);
 
 		// Create the plain text output.
