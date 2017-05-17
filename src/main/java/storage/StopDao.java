@@ -48,8 +48,7 @@ public class StopDao {
 		AttributeValue value = new AttributeValue(userId);
 		log.info("getUserStopDataItem for value={}", value);
 		map.put("userid", value);
-
-		GetItemResult result = dynamoDB.getItem("dbstops", map);
+		GetItemResult result = getStopItemWithRetry(map, 0);
 		Map<String, AttributeValue> resultItem = result.getItem();
 		if (resultItem != null) {
 			String stop = resultItem.get("stop").getS();
@@ -68,6 +67,24 @@ public class StopDao {
 		return item;
 	}
 
+	private GetItemResult getStopItemWithRetry(HashMap<String, AttributeValue> map, int retryNumber) {		
+		if (retryNumber < 3) {
+			GetItemResult result = dynamoDB.getItem("dbstops", map);
+			if (result == null) {
+				log.info("Retrying request to dynamo " + retryNumber);
+				return getStopItemWithRetry(map, retryNumber+1);
+			}
+			else {
+				log.info("Got a result on retry " + retryNumber);
+				return result;
+			}
+		}
+		else {
+			log.info("Gave up retrying dynamo " + retryNumber);
+			return null;
+		}
+	}
+	
 	public void saveUserStopDataItem(String userId, Integer stop) {
 		PutItemRequest putItem = new PutItemRequest();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");

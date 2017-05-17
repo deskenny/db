@@ -44,14 +44,29 @@ public class WsRequest {
 	}
 
 	public List<Result> getNextB(int stopNumber) {
-		String response = doRequest(WsRequest.SERVER + stopNumber);
-		StopResults results = gson.fromJson(response, StopResults.class);
-		List<Result> list = results.getResults();
-		
-//		list.forEach((value) -> {
-//			System.out.println(value);			
-//		});
-		return list;
+		return getNextB(stopNumber, 0);
+	}
+	
+	public List<Result> getNextB(int stopNumber, int retryNumber) {		
+		if (retryNumber < 3) {
+			String response = doRequest(WsRequest.SERVER + stopNumber);
+			StopResults results = gson.fromJson(response, StopResults.class);
+			if (results != null) {
+				log.info("Got a result from dublin bus backend " + retryNumber);				
+				return results.getResults();
+			}
+			else {
+				log.info("Retrying request to dublin bus backend " + retryNumber);
+				return getNextB(stopNumber, retryNumber+1);
+			}			
+	//		list.forEach((value) -> {
+	//			System.out.println(value);			
+	//		});
+		}
+		else {
+			log.info("Gave up retrying dublin bus backend " + retryNumber);			
+			return null;
+		}
 	}
 	
 	public String doRequest(String endpoint) {

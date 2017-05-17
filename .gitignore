@@ -1,2 +1,4 @@
 target
 .settings
+/src/terraform/terraform.tfstate.backup
+/src/terraform/terraform.tfstate
