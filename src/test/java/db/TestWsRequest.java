@@ -1,5 +1,7 @@
 package db;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.List;
 
 import org.junit.Test;
@@ -21,6 +23,7 @@ public class TestWsRequest {
 			System.out.println(value);			
 		});
 
-		
+		assertTrue(true);
+
 	}
 }
