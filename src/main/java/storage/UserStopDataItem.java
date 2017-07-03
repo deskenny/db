@@ -4,7 +4,7 @@ package storage;
 public class UserStopDataItem {
     private String userid ;
     private int stop ;
-
+    
     public String getUserId() {
         return userid;
     }

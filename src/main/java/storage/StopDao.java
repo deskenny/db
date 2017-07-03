@@ -51,17 +51,21 @@ public class StopDao {
 		GetItemResult result = getStopItemWithRetry(map, 0);
 		Map<String, AttributeValue> resultItem = result.getItem();
 		if (resultItem != null) {
-			String stop = resultItem.get("stop").getS();
+			AttributeValue attributeValue = resultItem.get("stop");
+			if (attributeValue != null) {
+				log.info("attributeValue={}", attributeValue);
+				String stop = attributeValue.getS();
 
-			try {
-				if (stop != null) {
-					log.info("getting stop number stop={}", stop);
-					item.setStop(Integer.valueOf(stop.toString()));
-				} else {
-					log.info("did not find stop number ");
+				try {
+					if (stop != null) {
+						log.info("getting stop number stop={}", stop);
+						item.setStop(Integer.valueOf(stop.toString()));
+					} else {
+						log.info("did not find stop number ");
+					}
+				} catch (NumberFormatException nfe) {
+					log.error("Number format problem " + nfe.getMessage());
 				}
-			} catch (NumberFormatException nfe) {
-				log.error("Number format problem " + nfe.getMessage());
 			}
 		}
 		return item;
