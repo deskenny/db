@@ -45,15 +45,6 @@ public class StopDao {
 	}
 
 	public void saveUserStopDataItem(String userId, Integer stop) {
-		PutItemRequest putItem = new PutItemRequest();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		HashMap<String, AttributeValue> map = new HashMap<String, AttributeValue>();
-		map.put("userid", new AttributeValue(userId));
-		map.put("stop", new AttributeValue(String.valueOf(stop)));
-		map.put("time", new AttributeValue(sdf.format(System.currentTimeMillis())));
-		putItem.setItem(map);
-		putItem.setTableName("dbstops");
-		PutItemResult result = dynamoDB.putItem(putItem);
-		log.info("result was " + result);
+		new StopDaoHelper().saveUserStopDataItem(userId, stop, dynamoDB);
 	}
 }
