@@ -28,7 +28,8 @@ public class WsRequest {
 
 	// private String SERVER = "http://localhost:8081/";
 	// private String SERVER = "https://www.globoforce.net/";
-	public final static String SERVER = "https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
+	//"https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
+	public final static String SERVER = "https://www.dublinbus.ie/RTPI/Sources-of-Real-Time-Information/?searchtype=view&searchquery=";
 	private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
 	private static WsRequest wsRequest = new WsRequest();
