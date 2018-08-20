@@ -156,7 +156,16 @@ public class DBSpeechlet implements Speechlet {
 
 	private SpeechletResponse doNoNextBus(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
-		speech.setText("Goodbye.");
+		if (Math.random() > 0.75) {
+			speech.setText("Goodbye.");
+		} else if (Math.random() > 0.5) {
+			speech.setText("Slawwn.");
+		} else if (Math.random() > 0.25) {
+			speech.setText("Safe trip.");
+		} else {
+			speech.setText("Enjoy.");
+		}
+			
 		return SpeechletResponse.newTellResponse(speech);
 	}
 
@@ -380,7 +389,7 @@ public class DBSpeechlet implements Speechlet {
 
 		String speechText = "";
 		if (stopNumber != 0) {
-			speechText = "You can get a list of the next buses due to your stop number " + stopNumber + " by saying \"when are the next buses. If you want to get detailed information, just say \"get detailed information\". If you ever want to change your stop number, just say stop number followed the the number of your stop.";
+			return getNextBus(session);
 		} else {
 			speechText = "You can get a list of the next buses due to your stop, but first you need to set your stop number. This is usually a four digit number written on your bus stop. You should just need to do this once and I'll remember it for you.";
 		}
