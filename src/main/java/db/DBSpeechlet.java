@@ -309,7 +309,7 @@ public class DBSpeechlet implements Speechlet {
 				return newTellResponse("There are no more details to tell you about stop number " + getStopNumber(session) + " at this time.");
 			}
 		} else {
-			return newTellResponse("Could not find any buses");
+			return newTellResponse("The National Transport Authority and Smart Dublin, have temporarily suspended data services. Check back in 1 or 2 weeks.");
 		}	
 	}
 
