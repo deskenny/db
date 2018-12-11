@@ -31,8 +31,8 @@ public class WsRequest {
 	//"https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
 	
 //	public final static String SERVER = "https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
-	public final static String SERVER = "https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid="; // stopped working 14 nov 2018
-//	public final static String SERVER = "https://www.dublinbus.ie/RTPI/Sources-of-Real-Time-Information/?searchtype=view&searchquery=";
+//	public final static String SERVER = "https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid="; // stopped working 14 nov 2018
+	public final static String SERVER = "https://www.dublinbus.ie/RTPI/Sources-of-Real-Time-Information/?searchtype=view&searchquery=";
 	private Map<String, String> defaultHeaders = new HashMap<String, String>();
 
 	private static WsRequest wsRequest = new WsRequest();
