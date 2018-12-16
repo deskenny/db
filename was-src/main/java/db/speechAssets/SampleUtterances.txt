@@ -1,0 +1,41 @@
+YesIntent yes
+YesIntent yep
+YesIntent yeah
+YesIntent sure
+YesIntent yes please
+YesIntent affirmative
+
+NoIntent no
+NoIntent nope
+NoIntent no thank you
+NoIntent not now
+NoIntent negative
+
+MoreDetailsIntent next bus in detail
+MoreDetailsIntent read more details
+MoreDetailsIntent more details	
+MoreDetailsIntent detailed list
+MoreDetailsIntent for a detailed list of buses
+
+WelcomeIntent welcome
+WelcomeIntent play welcome
+
+NextBusIntent next
+NextBusIntent next bus
+NextBusIntent next please
+NextBusIntent when is my bus due
+NextBusIntent when is the next bus
+NextBusIntent give me a summary
+NextBusIntent next buses
+NextBusIntent when are the next buses
+NextBusIntent for next buses
+NextBusIntent buses
+NextBusIntent for buses
+
+SetStopIntent stop should be {StopNumber}
+SetStopIntent set stop {StopNumber}
+SetStopIntent set stop number {StopNumber}
+SetStopIntent stop number is {StopNumber}
+SetStopIntent set my stop to number {StopNumber}
+SetStopIntent update my stop to number {StopNumber}
+

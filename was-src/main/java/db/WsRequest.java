@@ -31,11 +31,10 @@ public class WsRequest {
 	//"https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
 	
 //	public final static String SERVER = "https://data.smartdublin.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid=";
-	public final static String JSON_SERVER = "https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid="; // stopped working 14 nov 2018
-	public final static String HTML_SERVER = "https://www.dublinbus.ie/RTPI/Sources-of-Real-Time-Information/?searchtype=view&searchquery=";
+//	public final static String SERVER = "https://data.dublinked.ie/cgi-bin/rtpi/realtimebusinformation?format=json&stopid="; // stopped working 14 nov 2018
+	public final static String SERVER = "https://www.dublinbus.ie/RTPI/Sources-of-Real-Time-Information/?searchtype=view&searchquery=";
 	private Map<String, String> defaultHeaders = new HashMap<String, String>();
-	private final static boolean USING_JSON = Boolean.FALSE;
-	
+
 	private static WsRequest wsRequest = new WsRequest();
 
 	private Gson gson = new GsonBuilder().create();
@@ -49,17 +48,12 @@ public class WsRequest {
 	}
 
 	public List<Result> getNextB(int stopNumber) {
-		if (USING_JSON) {
-			return getNextBusJson(stopNumber, 0);
-		}
-		else {
-			return getNextBusHtml(stopNumber);
-		}
+		return getNextB(stopNumber, 0);
 	}
 	
-	public List<Result> getNextBusJson(int stopNumber, int retryNumber) {		
+	public List<Result> getNextB(int stopNumber, int retryNumber) {		
 		if (retryNumber < 3) {
-			String response = doRequest(WsRequest.JSON_SERVER + stopNumber);
+			String response = doRequest(WsRequest.SERVER + stopNumber);
 			StopResults results = gson.fromJson(response, StopResults.class);
 			if (results != null) {
 				log.info("Got a result from dublin bus backend " + retryNumber);				
@@ -67,25 +61,16 @@ public class WsRequest {
 			}
 			else {
 				log.info("Retrying request to dublin bus backend " + retryNumber);
-				return getNextBusJson(stopNumber, retryNumber+1);
+				return getNextB(stopNumber, retryNumber+1);
 			}			
+	//		list.forEach((value) -> {
+	//			System.out.println(value);			
+	//		});
 		}
 		else {
 			log.info("Gave up retrying dublin bus backend " + retryNumber);			
 			return null;
 		}
-	}
-	
-	public List<Result> getNextBusHtml(int stopNumber) {		
-			String response = doRequest(WsRequest.HTML_SERVER + stopNumber);
-			ScrappingHelper sh = new ScrappingHelper();
-			StopResults results = sh.parseHtmlStops(response);
-			results.setStopid(String.valueOf(stopNumber));
-			if (results != null) {
-				log.info("Got a result from dublin bus backend ");				
-				return results.getResults();
-			}	
-			return null;
 	}
 	
 	public String doRequest(String endpoint) {

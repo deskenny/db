@@ -289,7 +289,7 @@ public class DBSpeechlet implements Speechlet {
 			if (currentResultIndex + 3 < inBuses.size()) {
 				speechText = getMoreThanThreeBusString(inBuses, currentResultIndex);
 				session.setAttribute(CURRENT_RESULT_INDEX, currentResultIndex + 3);
-				return newAskResponse(speechText, "Would you like to hear more?", speechText);
+				return newAskResponse(speechText, "Would you like to hear about the next set of buses?", speechText);
 			}
 			else if (currentResultIndex + 2 < inBuses.size()) {
 				speechText = getThreeBusString(inBuses, currentResultIndex);
@@ -330,7 +330,7 @@ public class DBSpeechlet implements Speechlet {
 				+  getDueTime(inBuses.get(currentResultIndex)) + ", " 
 				+  getDueTime(inBuses.get(currentResultIndex+1)) + ", "
 				+ " and " + getDueTime(inBuses.get(currentResultIndex+2))					
-				+ " time. Would you like to hear more?";
+				+ " time. Would you like to hear about the next set of buses?";
 	}
 	
 	private String getThreeBusString(List<Result> inBuses, int currentResultIndex) {
