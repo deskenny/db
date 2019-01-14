@@ -1,0 +1,18 @@
+service: TestDB
+
+frameworkVersion: ">=1.2.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: java8
+  
+package:
+  artifact: target/dbtest-4.0.0-jar-with-dependencies.jar
+
+functions:
+  DB:
+    handler: db.DBRequestStreamHandler
+    events:
+      - http:
+          path: ping
+          method: get

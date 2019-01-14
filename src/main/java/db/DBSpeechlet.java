@@ -289,7 +289,7 @@ public class DBSpeechlet implements Speechlet {
 			if (currentResultIndex + 3 < inBuses.size()) {
 				speechText = getMoreThanThreeBusString(inBuses, currentResultIndex);
 				session.setAttribute(CURRENT_RESULT_INDEX, currentResultIndex + 3);
-				return newAskResponse(speechText, "Would you like to hear more?", speechText);
+				return newAskResponse(speechText, "Would you like more?", speechText);
 			}
 			else if (currentResultIndex + 2 < inBuses.size()) {
 				speechText = getThreeBusString(inBuses, currentResultIndex);
