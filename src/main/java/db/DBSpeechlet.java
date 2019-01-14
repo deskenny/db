@@ -157,13 +157,13 @@ public class DBSpeechlet implements Speechlet {
 	private SpeechletResponse doNoNextBus(Session session) {
 		PlainTextOutputSpeech speech = new PlainTextOutputSpeech();
 		if (Math.random() > 0.75) {
-			speech.setText("Goodbye.");
+			speech.setText("Bye");
 		} else if (Math.random() > 0.5) {
-			speech.setText("Slawwn.");
+			speech.setText("S-lawn");
 		} else if (Math.random() > 0.25) {
-			speech.setText("Safe trip.");
+			speech.setText("Safe trip");
 		} else {
-			speech.setText("Enjoy.");
+			speech.setText("Cheerio");
 		}
 			
 		return SpeechletResponse.newTellResponse(speech);

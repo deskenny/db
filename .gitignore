@@ -1,4 +1,5 @@
 target
 .settings
+.serverless
 /src/terraform/terraform.tfstate.backup
 /src/terraform/terraform.tfstate

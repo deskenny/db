@@ -5,14 +5,16 @@ frameworkVersion: ">=1.2.0 <2.0.0"
 provider:
   name: aws
   runtime: java8
+  region: eu-west-1	
+  role: arn:aws:iam::881856840650:role/AlexaDublinBusLambda
   
 package:
   artifact: target/dbtest-4.0.0-jar-with-dependencies.jar
 
 functions:
-  DB:
+  db:
+    description: Irish Dublin Bus backend created by serverless
     handler: db.DBRequestStreamHandler
     events:
-      - http:
-          path: ping
-          method: get
+      - alexaSkill: amzn1.ask.skill.3df127cf-5065-4c7d-b0a4-4dac8be345cd
+      
