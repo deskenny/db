@@ -14,7 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class ScrappingHelper {
-
+	public final static boolean ADJUST_DAYLIGHT_SAVINGS = true;
+	
     public String stripAndConvert(String in, long currentTime) {
         return calcDueTime(stripTd(in), currentTime);
     }
@@ -76,7 +77,11 @@ public class ScrappingHelper {
 								result.setDestination(stripTd(col.toString()));
 							}
 							else if (count == 2) {
-								result.setDuetime(stripAndConvert(col.toString(), System.currentTimeMillis()));
+								long currentTime = System.currentTimeMillis();
+								if (ADJUST_DAYLIGHT_SAVINGS) {
+									currentTime = currentTime + (1000*60*60);
+								}
+								result.setDuetime(stripAndConvert(col.toString(), currentTime));
 							}
 							count++;
 						}

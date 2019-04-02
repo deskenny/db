@@ -36,6 +36,23 @@ public class TestScrappingHelper {
 
 	}
 
+	@Test
+	public void testCalcDueTimeDaylightSavings() throws ParseException {
+		ScrappingHelper sh = new ScrappingHelper();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+		long time = sdf.parse("01-01-1970 14:34").getTime() + (1000*60*60);
+		assertEquals("4", sh.calcDueTime("15:38", time));
+
+		time = sdf.parse("01-01-1970 14:24").getTime() + (1000*60*60);
+		assertEquals("14", sh.calcDueTime("15:38", time));
+
+		time = sdf.parse("01-01-1970 13:24").getTime() + (1000*60*60);
+		assertEquals("74", sh.calcDueTime("15:38", time));
+
+		time = sdf.parse("01-01-1970 15:24").getTime() + (1000*60*60);
+		assertEquals("-46", sh.calcDueTime("15:38", time));
+
+	}
 
 
 }
